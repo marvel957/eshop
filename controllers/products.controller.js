@@ -5,18 +5,41 @@ const Product = require("../models/products.model");
 
 const jwt = require("jsonwebtoken");
 
+// async function createProduct(req, res, next) {
+//   let imagePaths = [];
+//   if (req.files && req.files.length > 0) {
+//     imagePaths = req.files.map(
+//       (file) => "http://localhost:5000/uploads/" + file.filename
+//     );
+//   }
+//   try {
+//     const category = await Category.findById(req.body.category);
+//     if (!category) {
+//       throw new CustomError("category does not exist", 404);
+//     }
+//     const product = await Product.create({
+//       ...req.body,
+//       images: imagePaths,
+//     });
+
+//     return res.status(200).json({ success: true, product });
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 async function createProduct(req, res, next) {
   let imagePaths = [];
+
   if (req.files && req.files.length > 0) {
-    imagePaths = req.files.map(
-      (file) => "http://localhost:5000/uploads/" + file.filename
-    );
+    imagePaths = req.files.map((file) => file.path);
   }
+
   try {
     const category = await Category.findById(req.body.category);
     if (!category) {
-      throw new CustomError("category does not exist", 404);
+      throw new CustomError("Category does not exist", 404);
     }
+
     const product = await Product.create({
       ...req.body,
       images: imagePaths,
@@ -27,6 +50,7 @@ async function createProduct(req, res, next) {
     next(error);
   }
 }
+
 async function getProducts(req, res, next) {
   console.log(req.user);
   try {
